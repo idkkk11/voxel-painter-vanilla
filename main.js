@@ -77,6 +77,9 @@
     document.addEventListener( 'keyup', onDocumentKeyUp );
 	window.addEventListener( 'resize', onWindowResize );
 
+    document.getElementById("reset-camera").addEventListener("click", resetCamera);
+    document.getElementById("clear").addEventListener("click", clearScene);
+
     // initial render
     render();
     
@@ -158,4 +161,20 @@
         requestAnimationFrame(render)  
         renderer.render( scene, camera );
         controls.update()
+    }
+
+    function resetCamera() {
+        console.log("reset camera");
+        camera.position.set( 500, 800, 1300 );
+        camera.lookAt( 0, 0, 0 );
+    }
+
+    function clearScene() {
+        for (let x in objects) { // scours through the objects in the scene
+            if (objects[x].geometry.type == "BoxGeometry") { // makes sure only blocks are deleted, not the plane too
+                // console.log(objects[x].geometry.type);
+                // console.log(objects[x].geometry);
+                scene.remove(objects[x])
+            }
+        }
     }
