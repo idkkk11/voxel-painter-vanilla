@@ -16,15 +16,23 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
 
-    // roll-over helpers
+    // roll-over helpers (block preview)
     const rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
-    const rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
+    const rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00, opacity: 0.6, transparent: true } );
     const rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
     scene.add( rollOverMesh );
 
     // cubes
     const cubeGeo = new THREE.BoxGeometry( 50, 50, 50 );
-    const cubeMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00, opacity: 0.5, transparent: true } );
+    const cubeMaterial = new THREE.MeshPhysicalMaterial({})
+    cubeMaterial.reflectivity = 0.5
+    cubeMaterial.roughness = 1
+    cubeMaterial.metalness = 0
+    cubeMaterial.clearcoat = 0
+    cubeMaterial.clearcoatRoughness = 0
+    cubeMaterial.color = new THREE.Color(0x4b4949)
+    cubeMaterial.ior = 1.2
+    cubeMaterial.thickness = 10.0
 
     // grid
     const gridHelper = new THREE.GridHelper( 1000, 20 );
