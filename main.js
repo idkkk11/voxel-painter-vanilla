@@ -18,7 +18,7 @@
 
     // roll-over helpers (block preview)
     const rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
-    const rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00, opacity: 0.6, transparent: true } );
+    const rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xEAF35A, opacity: 0.8, transparent: true } );
     const rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
     scene.add( rollOverMesh );
 
