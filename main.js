@@ -10,6 +10,9 @@
     // pencil eraser initialisation
     let pencilMode = true;
 
+    // texture initialisation
+    let plainTexture = true;
+
     // camera initialisation
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.set( 500, 800, 1300 );
@@ -36,6 +39,10 @@
     cubeMaterial.color = new THREE.Color(0x4b4949)
     cubeMaterial.ior = 1.2
     cubeMaterial.thickness = 10.0
+
+    // texture
+    const texture = new THREE.TextureLoader().load( './assets/brick_roughness.jpg' );
+    const material = new THREE.MeshBasicMaterial( { map: texture } );
 
     // grid
     const gridHelper = new THREE.GridHelper( 1000, 20 );
@@ -86,6 +93,9 @@
     document.getElementById("pencil").addEventListener("click", modePencil);
     document.getElementById("eraser").addEventListener("click", modeEraser);
 
+    document.getElementById("plain").addEventListener("click", modePlain);
+    document.getElementById("brick").addEventListener("click", modeBricks);
+
     // initial render
     render();
     
@@ -99,6 +109,16 @@
     function modeEraser() {
         pencilMode = false;
         console.log("ERASER");
+    }
+
+    function modePlain() {
+        plainTexture = true;
+        console.log("PLAIN");
+    }
+
+    function modeBricks() {
+        plainTexture = false;
+        console.log("BRICKS");
     }
     
     function onWindowResize() {
@@ -151,7 +171,16 @@
 
             // create cube  
             else {
-                const voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+                
+                let voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+
+                if ( !plainTexture ) {
+                    voxel = new THREE.Mesh( cubeGeo, material );
+                }
+                else {
+                    voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+                }
+
                 voxel.position.copy( intersect.point ).add( intersect.face.normal );
                 voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                 scene.add( voxel );
