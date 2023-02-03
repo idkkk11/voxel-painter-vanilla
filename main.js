@@ -74,11 +74,29 @@
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-    //orbit controls
+    // orbit controls
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
     controls.enablePan = false;
     controls.enableDamping = true;
+
+    // load files
+    const loader = new THREE.ObjectLoader();
+
+    // loader.load(
+    //     // resource URL
+    //     "./testdsad.json",
+    
+    //     // onLoad callback
+    //     // Here the loaded data is assumed to be an object
+    //     // function ( obj ) {
+    //     //     // Add the loaded object to the scene
+    //     //     objects.push( obj );
+    //     // },
+    // )
+
+    // const data = require("./testdsad.json");
+    
 
     // addEventListeners
     document.addEventListener( 'pointermove', onPointerMove );
@@ -96,10 +114,45 @@
     document.getElementById("plain").addEventListener("click", modePlain);
     document.getElementById("brick").addEventListener("click", modeBricks);
 
+    document.getElementById("print").addEventListener("click", print);
+    // document.getElementById("engrave").addEventListener("click", importFile);
+
     // initial render
     render();
+
+    let jui
     
     //FUNCTIONS ---------------------
+    // async function importFile() {
+    //     // import * as jui from "./testdsad.json" assert { type: "json" };
+    //     // console.log(jui);
+    //     // objects.push(jui);
+    //     console.log("ENGRAVE");
+
+    //     const requestURL = './testdsad.json';
+    //     const request = new Request(requestURL);
+
+    //     const response = await fetch(request);
+    //     const superHeroes = await response.json();
+
+    //     // logging(superHeroes);
+    // }
+
+    // function logging(obj) {
+    //     console.log("Hi");
+    //     console.log(JSON.parse(obj));
+    //     // objects.push(obj);
+    //     // scene.add(obj);
+    //     render();
+    // }
+
+    function print() {
+        console.log("Objects:");
+        console.log(objects);
+        // const json = objects.toJSON();
+        const json = JSON.stringify(objects);
+        console.log(json);
+    }
 
     function modePencil() {
         pencilMode = true;
@@ -171,7 +224,7 @@
 
             // create cube  
             else {
-                
+
                 let voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
 
                 if ( !plainTexture ) {
@@ -183,8 +236,11 @@
 
                 voxel.position.copy( intersect.point ).add( intersect.face.normal );
                 voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                // voxel = JSON.parse(JSON.stringify(voxel));
                 scene.add( voxel );
                 objects.push( voxel );
+                console.log(voxel);
+                // console.log(objects);
             }
             render();
         }
