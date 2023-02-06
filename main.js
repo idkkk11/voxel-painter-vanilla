@@ -1,6 +1,7 @@
     //imports
     import * as THREE from 'three'
     import { OrbitControls } from 'OrbitControls';
+    import { parseVXM } from "./js/vxmparser.js"
 
     // variable initialisation
     let isShiftDown = false;
@@ -115,7 +116,8 @@
     document.getElementById("brick").addEventListener("click", modeBricks);
 
     document.getElementById("print").addEventListener("click", print);
-    // document.getElementById("engrave").addEventListener("click", importFile);
+    document.getElementById("engrave").addEventListener("click", download);
+    document.getElementById("minus").addEventListener("click", upload);
 
     // initial render
     render();
@@ -146,12 +148,101 @@
     //     render();
     // }
 
+    let pendingChanges = false;
+    
+
+    function downloadFile(content, fileName, contentType) {
+        const a = document.createElement('a');
+        var file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+        //URL.revokeObjectURL(a.href) (breaks firefox)
+    }
+
+    function download() {
+        let content = []
+        for (let x in objects) {
+          if (objects[x].name == "block") {
+            let material
+            switch (objects[x].exterior) {
+              case "plain":
+                material = 0
+                break
+              case "bricks":
+                material = 1
+                break
+            }
+            console.log(objects[x].position)
+            console.log(material)
+            content.push({position: objects[x].position.toArray(), exterior: material})
+          }
+        }
+        let name = prompt("Please enter the filename to save as", "build")
+        console.log(name)
+        if (!(name == null || name == "")) {
+            pendingChanges = false
+            downloadFile(JSON.stringify(content), name + ".vxm", "text/json")
+        }
+      }
+
+    let save = [{"position":[-25,25,275],"exterior":1},{"position":[25,25,275],"exterior":1},{"position":[75,25,325],"exterior":0},{"position":[75,25,275],"exterior":0}]
+
+    function upload() { 
+        console.log("GRID");
+
+        let objData
+        objData = save;
+
+        // remove stuff in scene
+        for (let x in objects) {
+            if (objects[x].name == "block") {
+              console.log(x)
+              scene.remove(objects[x])
+            }
+        }
+
+        objects.splice(4, objects.length)
+        let voxels = []
+
+        for (let i in save) {
+            switch (save[i]["exterior"]) {
+                case 0:
+                    voxel = new THREE.Mesh( cubeGeo, cubeMaterial)
+                    console.log("WADW")
+                  break
+                case 1:
+                    let voxel = new THREE.Mesh( cubeGeo, material)
+                    console.log("WADW")
+                  break
+              }
+
+            let voxel.name = "block"
+            let pos = objdata[x]["position"]
+            if (scale) {
+            voxel.position.set(pos[0]/200, pos[1]/200, pos[2]/200)
+            }
+            else {
+            voxel.position.fromArray(objdata[x]["position"])
+            }
+            voxels.push(voxel)
+            for (let vox in voxels) {
+                scene.add(voxels[vox])
+                objects.push(voxels[vox])
+              }
+            console.log("Loaded file successfully")
+            render()
+        }
+    
+
+    };
+
     function print() {
         console.log("Objects:");
-        console.log(objects);
+        console.log(objects[1].geometry);
         // const json = objects.toJSON();
         const json = JSON.stringify(objects);
-        console.log(json);
+        // console.log(json);
     }
 
     function modePencil() {
@@ -229,13 +320,16 @@
 
                 if ( !plainTexture ) {
                     voxel = new THREE.Mesh( cubeGeo, material );
+                    voxel.exterior = "plain"
                 }
                 else {
                     voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+                    voxel.exterior = "bricks"
                 }
 
                 voxel.position.copy( intersect.point ).add( intersect.face.normal );
                 voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                voxel.name = "block"
                 // voxel = JSON.parse(JSON.stringify(voxel));
                 scene.add( voxel );
                 objects.push( voxel );
